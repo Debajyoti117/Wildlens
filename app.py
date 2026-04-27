@@ -1,8 +1,3 @@
-import os
-import base64
-import json
-import re
-from flask import Flask, request, jsonify, render_template
 from google import genai
 from google.genai import types
 
@@ -55,15 +50,11 @@ def identify():
     media_type = file.content_type or "image/jpeg"
 
     try:
-        client = genai.Client(api_key=API_KEY)
-
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=[
-                types.Part.from_bytes(data=image_data, mime_type=media_type),
-                PROMPT
-            ]
-        )
+        model = genai.GenerativeModel("gemini-2.0-flash")
+response = model.generate_content([
+    {"mime_type": media_type, "data": image_data},
+    PROMPT
+])
 
         text = response.text.strip()
         text = re.sub(r"^```(?:json)?\s*", "", text)
