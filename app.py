@@ -1,9 +1,14 @@
-from google import genai
-from google.genai import types
+
+import os
+import json
+import re
+from flask import Flask, request, jsonify, render_template
+import google.generativeai as genai
 
 app = Flask(__name__)
 
 API_KEY = os.environ.get("GEMINI_API_KEY", "")
+genai.configure(api_key=API_KEY)
 
 PROMPT = """You are an expert zoologist and wildlife encyclopedia AI.
 Analyze this animal photo and respond ONLY with a valid JSON object (no markdown, no code fences, no extra text).
@@ -51,17 +56,15 @@ def identify():
 
     try:
         model = genai.GenerativeModel("gemini-2.0-flash")
-response = model.generate_content([
-    {"mime_type": media_type, "data": image_data},
-    PROMPT
-])
-
+        response = model.generate_content([
+            {"mime_type": media_type, "data": image_data},
+            PROMPT
+        ])
         text = response.text.strip()
         text = re.sub(r"^```(?:json)?\s*", "", text)
         text = re.sub(r"\s*```$", "", text)
         animal_data = json.loads(text)
         return jsonify(animal_data)
-
     except json.JSONDecodeError:
         return jsonify({"error": "Could not parse AI response. Please try again."}), 500
     except Exception as e:
@@ -69,11 +72,10 @@ response = model.generate_content([
 
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
     if not API_KEY:
-        print("\n⚠️  WARNING: GEMINI_API_KEY is not set!")
-        print("Set it with:  $env:GEMINI_API_KEY=\"your-key-here\"  (PowerShell)")
-        print("Then restart the app.\n")
+        print("\n⚠️  WARNING: GEMINI_API_KEY is not set!\n")
     else:
         print("\n✅ Gemini API key found! Starting WildLens...\n")
-    port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port)
+
