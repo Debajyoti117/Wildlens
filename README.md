@@ -1,6 +1,4 @@
-# 🐾 WildLens — Animal Encyclopedia (Free Gemini Version)
-
-AI-powered animal encyclopedia using Google Gemini Flash — completely FREE!
+# 🐾 WildLens — Animal Encyclopedia
 
 ## Quick Setup
 
