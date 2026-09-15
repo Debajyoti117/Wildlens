@@ -1,4 +1,4 @@
-# 🐾 WildLens — Animal Encyclopedia 
+# 🐾 WildLens — Animal Encyclopedia
 
 ## Quick Setup
 
